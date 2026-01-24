@@ -1,1 +1,9 @@
-
+| カラム名 | データ型 | 主キー | 外部キー | 制約 |
+|----------------|----------------|--------|----------|------------------------------|
+| id | UUID | ○ | | NOT NULL |
+| name | VARCHAR(50) | | | NOT NULL |
+| email | VARCHAR(100) | | | UNIQUE, NOT NULL |
+| auth_provider | VARCHAR(20) | | | NOT NULL |
+| avatar_url | TEXT | | | NULL 可 |
+| is_anonymous | BOOLEAN | | | DEFAULT FALSE |
+| created_at | TIMESTAMP | | | DEFAULT CURRENT_TIMESTAMP |
