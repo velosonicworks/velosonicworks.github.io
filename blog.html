@@ -44,5 +44,49 @@
     <span class="text-body-secondary">vw</span>
   </div>
 </footer>
+<script>
+    // コメントを表示する場所を取得
+    let commentsContainer = document.getElementById("comments");
+
+// コメント一覧を表示する関数
+    function renderAllComments() {
+  // データベースのデータを取得
+      let allComments = getComments();
+
+  // 表示されているコメントをクリア
+      commentsContainer.innerHTML = "";
+
+  // コメントをくり返し表示
+      for (let i = 0; i < 3; i++) {
+    // 1セットのコメントを表示するための新しいdivを作成
+        let commentBox = document.createElement("div");
+    // 1セットのコメント内容をHTMLとして設定
+        commentBox.innerHTML = `
+          <p>名前：${allComments[i]["author"]}</p>
+        `
+    // コメントを表示する場所に1セットのコメントを追加
+        commentsContainer.appendChild(commentBox);
+      }
+    }
+
+// コメント送信ボタンをクリックしたときに動く関数
+    function submitButton() {
+  // 変数commentに入力された内容をまとめて入れる
+      let comment = {
+    author: document.getElementById("name").value
+      };
+
+  // コメントをデータベースに送信・保存
+      postComment(comment);
+
+  // 入力内容をリセット
+      document.getElementById("form").reset();
+
+  // コメント一覧を表示
+      renderAllComments();
+    }
+// ページを開いたときにコメント一覧を表示
+    renderAllComments();
+</script>
 </body>
 </html>
