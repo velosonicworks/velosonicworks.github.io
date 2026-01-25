@@ -58,7 +58,7 @@ function load() {fetch('https://script.google.com/macros/s/AKfycbxCuJJ_d5hKTD3BT
         document.getElementById("comment-container").innerText = JSON.stringify(data);
 });}
 function write() {const formData = new FormData();
-        formData.append(`A: ${name}`);
+        formData.append(`${name}`);
 
         fetch('https://script.google.com/macros/s/AKfycbxCuJJ_d5hKTD3BT67pgB2dSW8-NvTizzFC2jzgeIRBvATiQYCMPhjKNPU0rbyacyN2/exec', {
           method: 'POST',
