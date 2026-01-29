@@ -1,1 +1,150 @@
 
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ブログ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+        body {background-color: #000000;}
+        .comment-container {
+          max-width: 500px;
+          margin: 20px auto;
+          padding: 20px;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          font-family: sans-serif;
+        }
+
+        input, textarea {
+          width: 100%;
+          margin-bottom: 10px;
+          padding: 8px;
+          box-sizing: border-box;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+        }
+
+        #submit-btn {
+          background-color: #007bff;
+          color: white;
+          border: none;
+          padding: 10px 15px;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+
+        .comment-item {
+          background: #f9f9f9;
+          padding: 10px;
+          margin-top: 10px;
+          border-left: 4px solid #007bff;
+        }
+
+        .comment-name {
+          font-weight: bold;
+          font-size: 0.9em;
+        }
+      </style>
+</head>
+<body>
+<header>
+    <nav class="navbar bg-body-tertiary fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">velosonic worksブログ</a>
+        </div>
+    </nav>
+</header>
+    <div class="container mt-5 py-5">
+        <div class="row">
+            <font color="ffffff">
+            <div class="comment-container">
+              <h3>コメントを残す</h3>
+              <input type="text" id="username" placeholder="お名前" required>
+              <textarea id="comment-text" placeholder="コメントを入力してください" rows="3" required></textarea>
+              <button id="submit-btn">投稿する</button>
+              <div id="status-msg"></div>
+              <hr>
+              <h4>みんなのコメント</h4>
+              <div id="comment-display-area">読み込み中...</div>
+            </div>
+            </font>
+        </div>
+    </div>
+</main>
+<footer class="py-3 fixed-bottom bg-body-tertiary">
+  <div class="text-center">
+    <span class="text-body-secondary">vw</span>
+  </div>
+</footer>
+<script>
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwl2aO4YRNkxx-NBKNZE27deoL4IqBmGip94oYp4QiCFBODzh0iNwVrQHQlGjRQ7OIR/exec";
+
+document.getElementById('submit-btn').addEventListener('click', async function() {
+  const name = document.getElementById('username').value;
+  const comment = document.getElementById('comment-text').value;
+  const statusMsg = document.getElementById('status-msg');
+
+  if (!name || !comment) {
+    alert("入力してください");
+    return;
+  }
+
+  statusMsg.textContent = "送信中...";
+
+  try {
+    // GASのURLにPOSTリクエストを送る
+    const response = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({ name: name, comment: comment })
+    });
+
+    if (response.ok) {
+      statusMsg.textContent = "送信完了！";
+      document.getElementById('username').value = '';
+      document.getElementById('comment-text').value = '';
+      fetchComments();
+    }
+  } catch (error) {
+    statusMsg.textContent = "エラーが発生しました。";
+    console.error(error);
+  }
+});
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbwl2aO4YRNkxx-NBKNZE27deoL4IqBmGip94oYp4QiCFBODzh0iNwVrQHQlGjRQ7OIR/exec";
+
+// ページ読み込み時に実行
+window.addEventListener('load', fetchComments);
+
+async function fetchComments() {
+  const displayArea = document.getElementById('comment-display-area');
+  
+  try {
+    const response = await fetch(GAS_URL);
+    const comments = await response.json();
+
+    if (comments.length === 0) {
+      displayArea.textContent = "まだコメントはありません。";
+      return;
+    }
+
+    displayArea.innerHTML = ""; // 読み込み中を消す
+    comments.reverse().forEach(data => { // 新しい順に表示
+      const item = document.createElement('div');
+      item.className = 'comment-item';
+      item.innerHTML = `
+        <div class="comment-name"><strong>${escapeHTML(data.name)}</strong> <small>${new Date(data.date).toLocaleString()}</small></div>
+        <div class="comment-content">${escapeHTML(data.comment)}</div>
+      `;
+      displayArea.appendChild(item);
+    });
+  } catch (error) {
+    displayArea.textContent = "データの取得に失敗しました。";
+    console.error(error);
+  }
+}
+
+// 投稿成功時にも一覧を更新するように、前回の投稿ボタン処理の最後に fetchComments(); を追加すると便利です！
+</script>
+</body>
+</html>
